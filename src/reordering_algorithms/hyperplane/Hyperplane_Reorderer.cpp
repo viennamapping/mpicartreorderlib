@@ -7,7 +7,7 @@
 std::string mpireorderinglib::Hyperplane_Reorderer::get_name() {
   return name;
 }
-void mpireorderinglib::Hyperplane_Reorderer::perform_reordering(MPI_Comm old_comm,
+int mpireorderinglib::Hyperplane_Reorderer::perform_reordering(MPI_Comm old_comm,
 											  int ndims,
 											  const int *dims,
 											  const int *periods,
@@ -15,7 +15,7 @@ void mpireorderinglib::Hyperplane_Reorderer::perform_reordering(MPI_Comm old_com
 											  const int n_neighbors,
 											  MPI_Comm *cart_comm,
 											  mpireorderinglib::node_approximation_schemes scheme) {
-  	MPIX_Hyperplane_comm(old_comm, ndims, dims, periods, stencil, n_neighbors, cart_comm, scheme);
+  	return MPIX_Hyperplane_comm(old_comm, ndims, dims, periods, stencil, n_neighbors, cart_comm, scheme);
 }
 mpireorderinglib::Hyperplane_Reorderer::Hyperplane_Reorderer() : name("HYPERPLANE"){
 

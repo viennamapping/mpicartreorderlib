@@ -3,7 +3,7 @@
 //
 
 #include "Stencil_Strips_Reorderer.h"
-void mpireorderinglib::Stencil_Strips_Reorderer::perform_reordering(MPI_Comm old_comm,
+int mpireorderinglib::Stencil_Strips_Reorderer::perform_reordering(MPI_Comm old_comm,
 												  const int ndims,
 												  const int dims[],
 												  const int periods[],
@@ -11,7 +11,7 @@ void mpireorderinglib::Stencil_Strips_Reorderer::perform_reordering(MPI_Comm old
 												  const int n_neighbors,
 												  MPI_Comm* cart_comm,
 												  mpireorderinglib::node_approximation_schemes scheme) {
-	MPIX_Stencil_strips_cart(old_comm, ndims, dims, periods, 0, stencil, n_neighbors, cart_comm, scheme);
+	return MPIX_Stencil_strips_cart(old_comm, ndims, dims, periods, 0, stencil, n_neighbors, cart_comm, scheme);
 }
 std::string mpireorderinglib::Stencil_Strips_Reorderer::get_name() {
 	return name;

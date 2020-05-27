@@ -30,7 +30,7 @@ void mpireorderinglib::Stencil_Creater::create_stencil(const int ndims, std::vec
 		mpireorderinglib::five_point_stencil(stencil, ndims, n_neighbors);
 	}
 }
-void mpireorderinglib::Stencil_Creater::set_stencil(std::string &str) {
+void mpireorderinglib::Stencil_Creater::set_stencil(std::basic_string<char> str) {
 	str_stencil = str;
 }
 mpireorderinglib::Stencil_Creater::Stencil_Creater() : str_stencil("FIVE_POINT") {

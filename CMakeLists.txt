@@ -7,6 +7,7 @@ find_package(MPI REQUIRED)
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
+set(CMAKE_CXX_STANDARD 14)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} "include")
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} "src")
@@ -15,12 +16,16 @@ set(MY_COMPILE_FLAGS "")
 
 set(REORDERING_ALGORITHMS
         ${SRC_DIR}/reordering_algorithms/hyperplane/hyperplane.cpp
+        ${SRC_DIR}/reordering_algorithms/hyperplane/Hyperplane_Reorderer.cpp
         ${SRC_DIR}/reordering_algorithms/kd_tree/kd_tree.cpp
+        ${SRC_DIR}/reordering_algorithms/kd_tree/kd_Tree_Reorderer.cpp
         ${SRC_DIR}/reordering_algorithms/stencil_strips/stencil_strips.cpp
-        ${SRC_DIR}/reordering_algorithms/utils/node_comm.cpp)
+        ${SRC_DIR}/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.cpp
+        ${SRC_DIR}/reordering_algorithms/utils/node_comm.cpp
+        ${SRC_DIR}/reordering_algorithms/utils/utils.cpp)
 
 set(SETUP_CONFIGURATION
-        ${SRC_DIR}/configuration/configuration src/reordering_algorithms/utils/utils.h src/reordering_algorithms/utils/utils.cpp src/reordering_algorithms/abstract_reordering_scheme.h src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.cpp src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.h src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.cpp src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.h src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.cpp src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.h src/reordering_algorithms/include_reodering_schemes.h src/Log/Logger.cpp src/Log/Logger.h src/Stencils/Stencil_Creater.cpp src/Stencils/Stencil_Creater.h)
+        ${SRC_DIR}/configuration/configuration src/reordering_algorithms/utils/utils.h src/reordering_algorithms/utils/utils.cpp src/reordering_algorithms/abstract_reordering_scheme.h src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.cpp src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.h src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.cpp src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.h src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.cpp src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.h src/reordering_algorithms/include_reodering_schemes.h src/Log/Logger.cpp src/Log/Logger.h src/Stencils/Stencil_Creater.cpp src/Stencils/Stencil_Creater.h src/definitions.cpp)
 
 add_library(mpicartreorderlib SHARED
         ${REORDERING_ALGORITHMS}

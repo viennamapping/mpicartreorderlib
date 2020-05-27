@@ -1,76 +1,86 @@
 #include "configuration/configuration.h"
 
-mpireorderinglib::Configuration::Configuration() :
-str_alg("STENCIL_STRIPS"),
-str_node_scheme("NODES_MEAN"),
-str_stencil("FIVE_POINT") {
-  const char *env_var = getenv(env_flag);
-  if (env_var) {
-	char *pch = strtok(env_var, ":");
-	switch (pch) {
-	case "HYPERPLANE": alg = HYPERPLANE;
+namespace mpireorderinglib {
+void string_split(std::string &&str, std::string &rhs, char delimiter = ':') {
+  for (int i{0}; i < str.size(); i++) {
+	if (str[i] == delimiter) {
+	  rhs = str.substr(i + 1);
 	  break;
-	case "KD_TREE": alg = KD_TREE;
-	  break;
-	case "STENCIL_STRIPS": alg = STENCIL_STRIPS;
-	  break;
-	case "NO_REORDER": alg = NO_REORDER;
-	  break;
-	default:
-	  std::cout << "Warning: Invalid Algorithm! Set "
-				   "CART_REORDER_ALG=<HYPERPLANE;KD_TREE;STENCIL_STRIPS;NO_REORDER>:<NODES_MEAN;NODES_MIN;NODES_MAX>. "
-				   "Default Algorithm: STENCIL_STRIPS. Default Node scheme = NODES_MEAN."
-				<< std::endl;
-	}
-
-	pch = strtok(NULL, ":");
-	switch (pch) {
-	case "NODES_MIN": node_scheme = NODES_MIN;
-	  break;
-	case "NODES_MEAN": node_scheme = NODES_MEAN;
-	  break;
-	case "NODES_MAX";
-	  node_scheme = NODES_MAX;
-	  break;
-	default:
-	  std::cout << "Warning: Invalid Node Scheme! Set "
-				   "CART_REORDER_ALG=<HYPERPLANE;KD_TREE;STENCIL_STRIPS;NO_REORDER>:<NODES_MEAN;NODES_MIN;NODES_MAX>. "
-				   "Default Algorithm: STENCIL_STRIPS. Default Node scheme = NODES_MEAN."
-				<< std::endl;
 	}
   }
+};
 }
 
-mpireorderinglib::reordering_algorithms mpireorderinglib::Configuration::get_configuration() {
-  return alg;
+mpireorderinglib::Configuration::Configuration() :
+	str_alg("STENCIL_STRIPS"),
+	str_node_scheme("NODES_MEAN"),
+	str_stencil("FIVE_POINT") {
+  const char *flag = getenv(env_alg.data());
+  if (flag) {
+	mpireorderinglib::string_split(flag, str_alg);
+	spdlog::info("Read " + str_alg + " as algorithm");
+  }
+  flag = getenv(env_stencil.data());
+  if (flag) {
+	mpireorderinglib::string_split(flag, str_stencil);
+	spdlog::info("Read " + str_stencil + " as stencil");
+  }
+  flag = getenv(env_node_scheme.data());
+  if (flag) {
+	mpireorderinglib::string_split(flag, str_node_scheme);
+	spdlog::info("Read " + str_node_scheme + " as node scheme");
+  }
+
+  reorder_schemes.push_back(std::make_unique<mpireorderinglib::Hyperplane_Reorderer>());
+  reorder_schemes.push_back(std::make_unique<mpireorderinglib::kd_Tree_Reorderer>());
+  reorder_schemes.push_back(std::make_unique<mpireorderinglib::Stencil_Strips_Reorderer>());
 }
 
-mpireorderinglib::node_approximation_schemes mpireorderinglib::Configuration::get_node_scheme() {
-  return node_scheme;
+int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
+														const int ndims,
+														const int *dims,
+														const int *periods,
+														const int *stencil,
+														const int n_neighbors,
+														MPI_Comm *cart_comm) const {
+  mpireorderinglib::node_approximation_schemes scheme =
+	  mpireorderinglib::string_to_node_approximation_schemes(str_node_scheme);
+  for (const std::unique_ptr<mpireorderinglib::ReorderingScheme> &ptr : reorder_schemes) {
+	if (ptr->get_name() == str_alg) {
+	  return ptr->perform_reordering(old_comm, ndims, dims, periods, stencil,
+									 n_neighbors, cart_comm, scheme);
+	}
+  }
+  spdlog::warn("Reordering Algorithm not found!"
+			   " Performing Reordering with Stencil Strips");
+
+  return reorder_schemes.back()->perform_reordering(old_comm, ndims, dims,
+													periods, stencil, n_neighbors, cart_comm, scheme);
 }
 
 int MPIX_Cart_Comm_stencil(MPI_Comm old_comm, int ndims, const int dims[],
 						   const int periods[], int reorder, const int stencil[],
 						   const int n_neighbors, MPI_Comm *comm_cart) {
   static const mpireorderinglib::Configuration config;
-  mpireorderinglib::reordering_algorithms alg = config.get_configuration();
-  mpireorderinglib::node_approximation_schemes scheme = config.get_node_scheme();
+  return config.perform_reordering(old_comm, ndims, dims, periods, stencil, n_neighbors, comm_cart);
+}
 
-  int err;
-  switch (alg) {
-  case mpireorderinglib::HYPERPLANE:
-    err = MPIX_Hyperplane_comm(old_comm, ndims, dims, periods, reorder, const int stencil[],
-    					n_neighbors, comm_cart, scheme);
-    break;
-  case mpireorderinglib::KD_TREE:
-    err = MPIX_skewed_kdtree_cart_create(old_comm, dims, ndims, stencil, n_neighbors, periods, comm_cart);
-    break;
-  case mpireorderinglib::STENCIL_STRIPS:
-    err = MPIX_Stencil_strips_cart(old_comm, ndims, dims, periods, 0, stencil, n_neighbors, comm_cart, scheme);
-    break;
-  case mpireorderinglib::NO_REORDER:
-    err = MPI_Cart_create(old_comm, ndims, dims, periods, 0, comm_cart);
-    break;
+std::string mpireorderinglib::Configuration::get_str_stencil() const {
+  return str_stencil;
+}
+
+int MPI_Cart_create(MPI_Comm old_comm, int ndims, const int dims[],
+					const int periods[], int reorder, MPI_Comm *comm_cart) {
+  if (reorder == 0) {
+	return PMPI_Cart_create(old_comm, ndims, dims, periods, reorder, comm_cart);
+  } else {
+	const mpireorderinglib::Configuration config;
+	mpireorderinglib::Stencil_Creater stencil_creator;
+	stencil_creator.set_stencil(config.get_str_stencil());
+	std::vector<int> stencil;
+	int n_neighbors{0};
+	stencil_creator.create_stencil(ndims, stencil, &n_neighbors);
+	return config.perform_reordering(old_comm, ndims, dims, periods, stencil.data(), n_neighbors,
+									 comm_cart);
   }
-  return err;
 }
