@@ -22,6 +22,6 @@
  */
 int
 MPIX_skewed_kdtree_cart_create(MPI_Comm old_comm, const int *dims, int num_dims, const int *stencil, int stencil_size,
-                               int *periods, MPI_Comm *cart_comm);
+                               const int * const periods, MPI_Comm *cart_comm);
 
 #endif //CARTESIAN_RANK_REORDERING_KD_TREE_H

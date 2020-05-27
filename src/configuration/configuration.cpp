@@ -1,6 +1,9 @@
 #include "configuration/configuration.h"
 
-mpireorderinglib::Configuration::Configuration() : alg(STENCIL_STRIPS), node_scheme(NODES_MEAN) {
+mpireorderinglib::Configuration::Configuration() :
+str_alg("STENCIL_STRIPS"),
+str_node_scheme("NODES_MEAN"),
+str_stencil("FIVE_POINT") {
   const char *env_var = getenv(env_flag);
   if (env_var) {
 	char *pch = strtok(env_var, ":");

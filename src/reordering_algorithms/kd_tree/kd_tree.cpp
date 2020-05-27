@@ -31,7 +31,7 @@ void calculate_factors(int *factors, int num_dims, const int *stencil, int stenc
 
 int
 MPIX_skewed_kdtree_cart_create(MPI_Comm old_comm, const int *dims, int num_dims, const int *stencil, int stencil_size,
-                               int *periods, MPI_Comm *cart_comm) {
+                               const int * const periods, MPI_Comm *cart_comm) {
     MPI_Comm sorted_comm;
     mpireorderlib::MPIX_Node_comm(old_comm, &sorted_comm);
     int *factors = static_cast<int *>(malloc(num_dims * sizeof(double)));

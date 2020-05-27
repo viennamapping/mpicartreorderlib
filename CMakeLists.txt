@@ -20,7 +20,7 @@ set(REORDERING_ALGORITHMS
         ${SRC_DIR}/reordering_algorithms/utils/node_comm.cpp)
 
 set(SETUP_CONFIGURATION
-        ${SRC_DIR}/configuration/configuration src/reordering_algorithms/utils/utils.h src/reordering_algorithms/utils/utils.cpp)
+        ${SRC_DIR}/configuration/configuration src/reordering_algorithms/utils/utils.h src/reordering_algorithms/utils/utils.cpp src/reordering_algorithms/abstract_reordering_scheme.h src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.cpp src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.h src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.cpp src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.h src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.cpp src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.h src/reordering_algorithms/include_reodering_schemes.h src/Log/Logger.cpp src/Log/Logger.h src/Stencils/Stencil_Creater.cpp src/Stencils/Stencil_Creater.h)
 
 add_library(mpicartreorderlib SHARED
         ${REORDERING_ALGORITHMS}
