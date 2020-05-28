@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+#include <iostream>
+#include <sstream>
 #include "spdlog/spdlog.h"
 
 namespace mpireorderinglib {

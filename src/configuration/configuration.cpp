@@ -14,7 +14,7 @@ void string_split(std::string &&str, std::string &rhs, char delimiter = ':') {
 mpireorderinglib::Configuration::Configuration() :
 	str_alg("STENCIL_STRIPS"),
 	str_node_scheme("NODES_MEAN"),
-	str_stencil("FIVE_POINT") {
+	str_stencil("UNDEFINED") {
   const char *flag = getenv(env_alg.data());
   if (flag) {
 	mpireorderinglib::string_split(flag, str_alg);
@@ -30,10 +30,6 @@ mpireorderinglib::Configuration::Configuration() :
 	mpireorderinglib::string_split(flag, str_node_scheme);
 	spdlog::info("Read " + str_node_scheme + " as node scheme");
   }
-
-  reorder_schemes.push_back(std::make_unique<mpireorderinglib::Hyperplane_Reorderer>());
-  reorder_schemes.push_back(std::make_unique<mpireorderinglib::kd_Tree_Reorderer>());
-  reorder_schemes.push_back(std::make_unique<mpireorderinglib::Stencil_Strips_Reorderer>());
 }
 
 int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
