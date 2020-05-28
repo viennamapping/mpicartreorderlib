@@ -114,8 +114,6 @@ void hyperplane_internal(const int ndims,
 			 const float angle_values[],
 			 int grid_size,
 			 int dimension_order[],
-			 int *n_dimension_looked_at,
-			 int *depth_recursion_tree,
 			 int partition_id) {
   hyperplane_dimension_order(angle_values, dims, ndims, dimension_order);
   //Entering base case is either having two

@@ -13,7 +13,7 @@
 namespace mpireorderinglib {
 class ReorderingScheme {
 public:
-  virtual ~ReorderingScheme() = 0;
+  //virtual ~ReorderingScheme() = 0;
   virtual std::string get_name() = 0;
   virtual int perform_reordering(MPI_Comm old_comm, int ndims, const int dims[],
 								  const int periods[], const int stencil[], const int n_neighbors,

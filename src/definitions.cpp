@@ -4,7 +4,7 @@
 
 #include "definitions.h"
 
-mpireorderinglib::node_approximation_schemes string_to_node_approximation_schemes(const std::string &str){
+mpireorderinglib::node_approximation_schemes mpireorderinglib::string_to_node_approximation_schemes(const std::string &str){
 if (str.compare("NODES_MIN")) {
 return mpireorderinglib::NODES_MIN;
 } else if (str.compare("NODES_MEAN")) {

@@ -7,7 +7,7 @@
 
 #include "definitions.h"
 
-namespace mpireorderlib {
+namespace mpireorderinglib {
 	int MPIX_Node_comm (MPI_Comm old_comm, MPI_Comm* new_comm,
 		int* n_nodes = nullptr, int* ppn = nullptr,
 		mpireorderinglib::node_approximation_schemes scheme = mpireorderinglib::node_approximation_schemes::NODES_MEAN);

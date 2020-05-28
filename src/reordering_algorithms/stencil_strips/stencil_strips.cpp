@@ -4,177 +4,218 @@
 
 #include "stencil_strips.h"
 
-int max_index(const int *a, int n);
+int max_index(const int *a, int n) {
+  int m = -1;
+  int j = -1;
+  for (int i = 0; i < n; i++) {
+	if (a[i] > m) {
+	  m = a[i];
+	  j = i;
+	}
+  }
+  return j;
+}
 
-void compute_dim_order(int num_dims, int max_dim, int *dim_order);
-
+void compute_dim_order(int num_dims, int max_dim, int *dim_order) {
+  for (int i = 0; i < num_dims; i++) {
+	if (i < max_dim) {
+	  dim_order[i] = i;
+	} else {
+	  dim_order[i] = i + 1;
+	}
+  }
+  dim_order[num_dims - 1] = max_dim;
+}
 
 void compute_stencil_strip_heights(int num_dims, int part_size, int max_dim, const int *dims, const int *dim_order,
-                           int *small_strip_heights, int *nums_big_strips, int *nums_small_strips,
-                           const int stencil[], const int n_neighbors) {
-    int rem_part_size = part_size;
-    int nroot;
+								   int *small_strip_heights, int *nums_big_strips, int *nums_small_strips,
+								   const int stencil[], const int n_neighbors) {
+  int rem_part_size = part_size;
+  int nroot;
 
-    double alphas[num_dims];
-  	mpireorderinglib::get_hypercube_distortion_factors(num_dims, stencil, n_neighbors, alphas);
+  double alphas[num_dims];
+  mpireorderinglib::get_hypercube_distortion_factors(num_dims, stencil, n_neighbors, alphas);
 
-    for (int dim_index = 0; dim_index < num_dims; dim_index++) {
-        int dim = dim_order[dim_index];
-        nroot = pow(rem_part_size*alphas[dim], 1.0 / num_dims);
-        nroot = dim == max_dim ? 1 : nroot;
+  for (int dim_index = 0; dim_index < num_dims; dim_index++) {
+	int dim = dim_order[dim_index];
+	nroot = pow(rem_part_size * alphas[dim], 1.0 / num_dims);
+	nroot = dim == max_dim ? 1 : nroot;
 
-        if(nroot == 0)
-          nroot = 1;
+	if (nroot == 0)
+	  nroot = 1;
 
-        int num_strips;
-        if (dim != max_dim) {
-            num_strips = dims[dim] / nroot;
-        } else {
-            num_strips = dims[dim];
-        }
+	int num_strips;
+	if (dim != max_dim) {
+	  num_strips = dims[dim] / nroot;
+	} else {
+	  num_strips = dims[dim];
+	}
 
-        if (num_strips <= 0) {
-            num_strips = 1;
-        }
+	if (num_strips <= 0) {
+	  num_strips = 1;
+	}
 
-        int rem = dims[dim] - num_strips * nroot;
-        small_strip_heights[dim] = nroot + rem / num_strips;
-        nums_big_strips[dim] = rem % num_strips;
-        nums_small_strips[dim] = num_strips - nums_big_strips[dim];
-        rem_part_size /= small_strip_heights[dim];
-    }
+	int rem = dims[dim] - num_strips * nroot;
+	small_strip_heights[dim] = nroot + rem / num_strips;
+	nums_big_strips[dim] = rem % num_strips;
+	nums_small_strips[dim] = num_strips - nums_big_strips[dim];
+	rem_part_size /= small_strip_heights[dim];
+  }
 }
 
 void compute_coord(int num_dims, const int *strip_sizes, int target_rank, int *coord, const int *dim_order,
-                   const bool *flipped_dim);
+				   const bool *flipped_dim) {
+  int curr_dim;
+  for (int dim_index = 0; dim_index < num_dims; dim_index++) {
+	curr_dim = dim_order[dim_index];
+	int coord_component = target_rank;
+	int strip_size = strip_sizes[curr_dim];
 
-void compute_stencil_strip(int num_dims, const int *dims, int *strip_sizes,
-                   int max_dim, int target_rank, int *coord, int total_nodes, const int *dim_order, int part_size,
-                   const int stencil[], const int n_neighbor) {
-    bool flip_next = false;
-    bool flipped_dim[num_dims];
-    int curr_dim;
-    int strip_coord[num_dims];
-    int small_strip_heights[num_dims];
-    int nums_big_strips[num_dims];
-    int nums_small_strips[num_dims];
+	for (int rem_dim_index = num_dims - 1; rem_dim_index > dim_index; rem_dim_index--) {
+	  int rem_dim = dim_order[rem_dim_index];
+	  coord_component /= strip_sizes[rem_dim];
+	}
 
-    compute_stencil_strip_heights(num_dims, part_size, max_dim, dims, dim_order, small_strip_heights, nums_big_strips,
-                          nums_small_strips, stencil, n_neighbor);
+	if (flipped_dim[curr_dim]) {
+	  coord[curr_dim] += strip_size - ((coord_component % strip_size) + 1);
+	} else {
+	  coord[curr_dim] += coord_component % strip_size;
+	}
+  }
+}
 
-    for (int dim_index = 0; dim_index < num_dims; dim_index++) {
-        curr_dim = dim_order[dim_index];
-        flipped_dim[curr_dim] = flip_next;
+void compute_stencil_strip(int num_dims,
+						   const int *dims,
+						   int *strip_sizes,
+						   int max_dim,
+						   int target_rank,
+						   int *coord,
+						   int total_nodes,
+						   const int *dim_order,
+						   int part_size,
+						   const int stencil[],
+						   const int n_neighbor) {
+  bool flip_next = false;
+  bool flipped_dim[num_dims];
+  int curr_dim;
+  int strip_coord[num_dims];
+  int small_strip_heights[num_dims];
+  int nums_big_strips[num_dims];
+  int nums_small_strips[num_dims];
 
-        int small_strip_height = small_strip_heights[curr_dim];
-        int num_big_strips = nums_big_strips[curr_dim];
-        int num_small_strips = nums_small_strips[curr_dim];
+  compute_stencil_strip_heights(num_dims, part_size, max_dim, dims, dim_order, small_strip_heights, nums_big_strips,
+								nums_small_strips, stencil, n_neighbor);
 
-        // regardless of strip-height, a single row in any strip contains the same number of nodes (always an integer)
-        int nodes_per_row = total_nodes / dims[curr_dim];
-        // a big strip has one more row than a small strip, so we calculate how many nodes are in a big strip
-        int big_strip_nodes = ((small_strip_height + 1) * num_big_strips * nodes_per_row);
-        int small_strip_nodes = total_nodes - big_strip_nodes;
+  for (int dim_index = 0; dim_index < num_dims; dim_index++) {
+	curr_dim = dim_order[dim_index];
+	flipped_dim[curr_dim] = flip_next;
 
-        if (!flip_next) {
-            // assuming that we start by filling the bigger strips, we calculate whether or not we surpass the 'big strip layers'
-            // if so, then the small strips also have to be filled
-            bool small_strips_required = target_rank >= big_strip_nodes;
+	int small_strip_height = small_strip_heights[curr_dim];
+	int num_big_strips = nums_big_strips[curr_dim];
+	int num_small_strips = nums_small_strips[curr_dim];
 
-            if (small_strips_required) {
-                // we know for sure that our rank surpasses all big strips
-                target_rank -= big_strip_nodes;
-                // calculate in which small strip we are
-                int small_strip_index = target_rank / (small_strip_height * nodes_per_row);
-                target_rank -= small_strip_index * small_strip_height * nodes_per_row;
-                coord[curr_dim] += num_big_strips * (small_strip_height + 1) + small_strip_index * small_strip_height;
-                strip_sizes[curr_dim] = small_strip_height;
-                strip_coord[curr_dim] = num_big_strips + small_strip_index;
-            } else {
-                // we know for sure that our rank is somewhere within the big strips
-                int big_strip_index = target_rank / ((small_strip_height + 1) * nodes_per_row);
-                target_rank -= big_strip_index * (small_strip_height + 1) * nodes_per_row;
-                coord[curr_dim] += big_strip_index * (small_strip_height + 1);
-                strip_sizes[curr_dim] = small_strip_height + 1;
-                strip_coord[curr_dim] = big_strip_index;
-            }
-        } else {
-            // assuming that we start by filling the smaller strips, we calculate whether or not we surpass the
-            // 'small strip layers'
-            // if so, then the big strips also have to be filled
-            bool big_strips_required = target_rank >= small_strip_nodes;
+	// regardless of strip-height, a single row in any strip contains the same number of nodes (always an integer)
+	int nodes_per_row = total_nodes / dims[curr_dim];
+	// a big strip has one more row than a small strip, so we calculate how many nodes are in a big strip
+	int big_strip_nodes = ((small_strip_height + 1) * num_big_strips * nodes_per_row);
+	int small_strip_nodes = total_nodes - big_strip_nodes;
 
-            if (big_strips_required) {
-                // we know for sure that our rank surpasses all small strips
-                target_rank -= small_strip_nodes;
-                // calculate in which small strip we are
-                int big_strip_index = target_rank / ((small_strip_height + 1) * nodes_per_row);
-                target_rank -= big_strip_index * (small_strip_height + 1) * nodes_per_row;
-                coord[curr_dim] += (num_big_strips - (big_strip_index + 1)) * (small_strip_height + 1);
-                strip_sizes[curr_dim] = small_strip_height + 1;
-                strip_coord[curr_dim] = (num_big_strips - (big_strip_index + 1));
-            } else {
-                // we know for sure that our rank is somewhere within the small strips
-                int small_strip_index = target_rank / (small_strip_height * nodes_per_row);
-                target_rank -= small_strip_index * small_strip_height * nodes_per_row;
-                coord[curr_dim] += (num_big_strips * (small_strip_height + 1)) +
-                                   (num_small_strips - (small_strip_index + 1)) * small_strip_height;
-                strip_sizes[curr_dim] = small_strip_height;
-                strip_coord[curr_dim] = num_big_strips + (num_small_strips - (small_strip_index + 1));
-            }
-        }
-        if (strip_coord[curr_dim] % 2 == 1) {
-            flip_next = !flip_next;
-        }
-        total_nodes = (total_nodes / dims[curr_dim]) * strip_sizes[curr_dim];
-    }
-    compute_coord(num_dims, strip_sizes, target_rank, coord, dim_order, flipped_dim);
+	if (!flip_next) {
+	  // assuming that we start by filling the bigger strips, we calculate whether or not we surpass the 'big strip layers'
+	  // if so, then the small strips also have to be filled
+	  bool small_strips_required = target_rank >= big_strip_nodes;
+
+	  if (small_strips_required) {
+		// we know for sure that our rank surpasses all big strips
+		target_rank -= big_strip_nodes;
+		// calculate in which small strip we are
+		int small_strip_index = target_rank / (small_strip_height * nodes_per_row);
+		target_rank -= small_strip_index * small_strip_height * nodes_per_row;
+		coord[curr_dim] += num_big_strips * (small_strip_height + 1) + small_strip_index * small_strip_height;
+		strip_sizes[curr_dim] = small_strip_height;
+		strip_coord[curr_dim] = num_big_strips + small_strip_index;
+	  } else {
+		// we know for sure that our rank is somewhere within the big strips
+		int big_strip_index = target_rank / ((small_strip_height + 1) * nodes_per_row);
+		target_rank -= big_strip_index * (small_strip_height + 1) * nodes_per_row;
+		coord[curr_dim] += big_strip_index * (small_strip_height + 1);
+		strip_sizes[curr_dim] = small_strip_height + 1;
+		strip_coord[curr_dim] = big_strip_index;
+	  }
+	} else {
+	  // assuming that we start by filling the smaller strips, we calculate whether or not we surpass the
+	  // 'small strip layers'
+	  // if so, then the big strips also have to be filled
+	  bool big_strips_required = target_rank >= small_strip_nodes;
+
+	  if (big_strips_required) {
+		// we know for sure that our rank surpasses all small strips
+		target_rank -= small_strip_nodes;
+		// calculate in which small strip we are
+		int big_strip_index = target_rank / ((small_strip_height + 1) * nodes_per_row);
+		target_rank -= big_strip_index * (small_strip_height + 1) * nodes_per_row;
+		coord[curr_dim] += (num_big_strips - (big_strip_index + 1)) * (small_strip_height + 1);
+		strip_sizes[curr_dim] = small_strip_height + 1;
+		strip_coord[curr_dim] = (num_big_strips - (big_strip_index + 1));
+	  } else {
+		// we know for sure that our rank is somewhere within the small strips
+		int small_strip_index = target_rank / (small_strip_height * nodes_per_row);
+		target_rank -= small_strip_index * small_strip_height * nodes_per_row;
+		coord[curr_dim] += (num_big_strips * (small_strip_height + 1)) +
+			(num_small_strips - (small_strip_index + 1)) * small_strip_height;
+		strip_sizes[curr_dim] = small_strip_height;
+		strip_coord[curr_dim] = num_big_strips + (num_small_strips - (small_strip_index + 1));
+	  }
+	}
+	if (strip_coord[curr_dim] % 2 == 1) {
+	  flip_next = !flip_next;
+	}
+	total_nodes = (total_nodes / dims[curr_dim]) * strip_sizes[curr_dim];
+  }
+  compute_coord(num_dims, strip_sizes, target_rank, coord, dim_order, flipped_dim);
 }
 
 void MPIX_stencil_strips_cart_create(MPI_Comm old_comm, const int *dims, const int num_dims, int part_size,
-                                      const int* periods, const int stencil[], const int n_neighbors,
-                                      MPI_Comm *cart_comm) {
-    int rank, world_size;
-    MPI_Comm_rank(old_comm, &rank);
-    MPI_Comm_size(old_comm, &world_size);
-    int *coord = static_cast<int *>(calloc(num_dims, sizeof(int)));
-    int *strip_sizes = static_cast<int *>(calloc(num_dims, sizeof(int)));
-    int *dim_order = static_cast<int *>(malloc(num_dims * sizeof(int)));
+									 const int *periods, const int stencil[], const int n_neighbors,
+									 MPI_Comm *cart_comm) {
+  int rank, world_size;
+  MPI_Comm_rank(old_comm, &rank);
+  MPI_Comm_size(old_comm, &world_size);
+  int *coord = static_cast<int *>(calloc(num_dims, sizeof(int)));
+  int *strip_sizes = static_cast<int *>(calloc(num_dims, sizeof(int)));
+  int *dim_order = static_cast<int *>(malloc(num_dims * sizeof(int)));
 
-    int max_dim = max_index(dims, num_dims);
+  int max_dim = max_index(dims, num_dims);
 
-    compute_dim_order(num_dims, max_dim, dim_order);
-    compute_stencil_strip(num_dims, dims, strip_sizes, max_dim, rank, coord, world_size, dim_order, part_size,
-    	stencil, n_neighbors);
+  compute_dim_order(num_dims, max_dim, dim_order);
+  compute_stencil_strip(num_dims, dims, strip_sizes, max_dim, rank, coord, world_size, dim_order, part_size,
+						stencil, n_neighbors);
 
-    int new_rank = coord[0];
-    for (int i = 1; i < num_dims; i++) {
-        new_rank = new_rank * dims[i] + coord[i];
-    }
+  int new_rank = coord[0];
+  for (int i = 1; i < num_dims; i++) {
+	new_rank = new_rank * dims[i] + coord[i];
+  }
 
-    MPI_Comm tmp;
-    MPI_Comm_split(old_comm, 0, new_rank, &tmp);
-    MPI_Cart_create(tmp, num_dims, dims, periods, 0, cart_comm);
-    MPI_Comm_free(&tmp);
+  MPI_Comm tmp;
+  MPI_Comm_split(old_comm, 0, new_rank, &tmp);
+  MPI_Cart_create(tmp, num_dims, dims, periods, 0, cart_comm);
+  MPI_Comm_free(&tmp);
 
-    free(coord);
-    free(strip_sizes);
-    free(dim_order);
+  free(coord);
+  free(strip_sizes);
+  free(dim_order);
 }
 
-int get_part_size(MPI_Comm oldcomm, mpireorderinglib::node_approximation_schemes scheme);
-
 int MPIX_Stencil_strips_cart(MPI_Comm oldcomm, const int ndims, const int *dims, const int *periods, const int reorder,
-                              const int stencil[], const int n_neighbors, MPI_Comm *cartcomm,
-                              mpireorderinglib::node_approximation_schemes scheme) {
-    int part_size, n_nodes;
-    part_size = get_part_size(oldcomm, scheme);
+							 const int stencil[], const int n_neighbors, MPI_Comm *cartcomm,
+							 mpireorderinglib::node_approximation_schemes scheme) {
+  int part_size, n_nodes;
 
-    MPI_Comm tmp;
-    mpireorderlib::MPIX_Node_comm (oldcomm, &tmp, &n_nodes, &part_size, scheme);
-    MPIX_stencil_strips_cart_create(oldcomm, dims, ndims, part_size, periods, stencil, n_neighbors, &tmp);
+  MPI_Comm tmp;
+  mpireorderinglib::MPIX_Node_comm(oldcomm, &tmp, &n_nodes, &part_size, scheme);
+  MPIX_stencil_strips_cart_create(oldcomm, dims, ndims, part_size, periods, stencil, n_neighbors, &tmp);
 
-    int err = MPI_Cart_create(tmp, ndims, dims, periods, 0, cartcomm);
-    MPI_Comm_free(&tmp);
-    return err;
+  int err = MPI_Cart_create(tmp, ndims, dims, periods, 0, cartcomm);
+  MPI_Comm_free(&tmp);
+  return err;
 }
