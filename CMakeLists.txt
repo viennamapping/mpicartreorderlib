@@ -34,3 +34,6 @@ add_library(mpicartreorderlib SHARED
 
 set_target_properties(mpicartreorderlib PROPERTIES SOVERSION 0)
 set_target_properties(mpicartreorderlib PROPERTIES PUBLIC_HEADER include/mpicartreorder.h)
+
+install(TARGETS mpicartreorderlib DESTINATION lib)
+install(FILES mpicartreorderlib.h DESTIONATION include)
