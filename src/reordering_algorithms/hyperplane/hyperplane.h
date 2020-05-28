@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include <mpi.h>
 #include "definitions.h"
 #include "reordering_algorithms/utils/node_comm.h"
 #include "reordering_algorithms/utils/utils.h"
