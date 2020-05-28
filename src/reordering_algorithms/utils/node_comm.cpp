@@ -1,6 +1,6 @@
 #include "reordering_algorithms/utils/node_comm.h"
 
-int mpireorderlib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
+int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
 								   int* n_nodes, int* ppn, mpireorderinglib::node_approximation_schemes scheme) {
   MPI_Comm nodecomm, leadercomm;
   MPI_Comm_split_type(oldcomm, MPI_COMM_TYPE_SHARED, 0,

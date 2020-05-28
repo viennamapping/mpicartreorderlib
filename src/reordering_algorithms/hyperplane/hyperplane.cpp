@@ -230,7 +230,7 @@ int MPIX_Hyperplane_comm(MPI_Comm oldcomm,
 
   int n_nodes, n_processes_p_node, my_partition;
   MPI_Comm node_world_comm;
-  mpireorderlib::MPIX_Node_comm(oldcomm,
+  mpireorderinglib::MPIX_Node_comm(oldcomm,
 				&node_world_comm,
 				&n_nodes,
 				&n_processes_p_node,
