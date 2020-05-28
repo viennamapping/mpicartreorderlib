@@ -23,8 +23,8 @@ void get_neighbors_from_stencil(MPI_Comm cart_comm,
 									  std::vector<int> &neighbors);
 
 void MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
-								   int &total_offnode_neighbors,
-								   int &max_offnode_neighbors);
+								   int *total_offnode_neighbors,
+								   int *max_offnode_neighbors);
 
 void MPIX_Dist_graph_create_from_cart_comm(MPI_Comm cart_comm, const int ndims,
 										const int stencil[],

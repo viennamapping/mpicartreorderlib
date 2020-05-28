@@ -68,13 +68,13 @@ void mpireorderinglib::get_neighbors_from_stencil(MPI_Comm cart_comm,
 }
 
 void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
-													  int &total_offnode_neighbors,
-													  int &max_offnode_neighbors) {
+													  int *total_offnode_neighbors,
+													  int *max_offnode_neighbors) {
   int status;
   MPI_Topo_test(dist_graph_comm, &status);
   assert(status == MPI_DIST_GRAPH);
-  total_offnode_neighbors = 0;
-  max_offnode_neighbors = 0;
+  *total_offnode_neighbors = 0;
+  *max_offnode_neighbors = 0;
 
   //find out which processes are on the same node
   MPI_Comm node_comm;
@@ -158,13 +158,13 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
 
   //Communicate max offnode neighbors
   MPI_Allreduce(&node_offnode_comm_size,
-				&max_offnode_neighbors,
+				max_offnode_neighbors,
 				1, MPI_INT, MPI_MAX, dist_graph_comm);
 
   //Communciate local offnode neighbors to everybody
   //sum up and devide by two. Symmetry assumption
   MPI_Allreduce(&local_offnode_neighbors,
-				&total_offnode_neighbors,
+				total_offnode_neighbors,
 				1, MPI_INT, MPI_SUM, dist_graph_comm);
 
   delete[] group_ranks;
@@ -206,7 +206,7 @@ void mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(MPI_Comm cart_comm,
 						dist_graph_comm);
 }
 
-void MPIX_Internode_cost_stencil(MPI_Comm cart_comm, int &total, int &max, int stencil[], int n_neighbors) {
+void MPIX_Internode_cost_stencil(MPI_Comm cart_comm, int *total, int *max, int stencil[], int n_neighbors) {
   int status;
   MPI_Topo_test(cart_comm, &status);
   assert(status == MPI_CART);
@@ -226,7 +226,7 @@ void MPIX_Internode_cost_stencil(MPI_Comm cart_comm, int &total, int &max, int s
   MPI_Comm_free(&dist_graph);
 }
 
-void MPIX_Internode_cost(MPI_Comm cart_comm, int &total, int &max) {
+void MPIX_Internode_cost(MPI_Comm cart_comm, int *total, int *max) {
   int status;
   MPI_Topo_test(cart_comm, &status);
   assert(status == MPI_CART);
