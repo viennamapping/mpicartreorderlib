@@ -80,3 +80,11 @@ int MPI_Cart_create(MPI_Comm old_comm, int ndims, const int dims[],
 									 comm_cart);
   }
 }
+
+const std::string mpireorderinglib::Configuration::env_alg = "CART_REORDER_ALGORITHM";
+const std::string mpireorderinglib::Configuration::env_stencil = "CART_REORDER_STENCIL";
+const std::string mpireorderinglib::Configuration::env_node_scheme = "CART_REORDER_NODE_AGGREGATION";
+const std::array<std::unique_ptr<mpireorderinglib::ReorderingScheme>, 3>
+	reorder_schemes{std::make_unique<mpireorderinglib::Hyperplane_Reorderer>(),
+					std::make_unique<mpireorderinglib::kd_Tree_Reorderer>(),
+					std::make_unique<mpireorderinglib::Stencil_Strips_Reorderer>()};

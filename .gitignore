@@ -2,4 +2,3 @@
 /cmake-build-debug/*
 /src/Log
 /src/spdlog-1.x
-/src/spdlog

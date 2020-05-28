@@ -6,7 +6,11 @@
 #define MPIREORDERLIB_SRC_EVALUATION_EVALUATION_METHODS_H
 
 #include <mpi.h>
+#include <cassert>
 #include <vector>
+
+#include "configuration/configuration.h"
+#include "Stencils/Stencil_Creater.h"
 
 namespace mpireorderinglib {
 void get_neighbors_from_stencil(MPI_Comm cart_comm,

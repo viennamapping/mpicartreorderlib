@@ -2,16 +2,17 @@
 // Created by konradvonkirchbach on 5/28/20.
 //
 
+#include <algorithm>
 #include "Evaluation/evaluation_methods.h"
 
 void mpireorderinglib::get_neighbors_from_stencil(MPI_Comm cart_comm,
-									  const int cart_rank,
-									  const int ndims,
-									  const int stencil[],
-									  const int n_neighbors,
-									  const int dims[],
-									  const int periods[],
-									  std::vector<int> &neighbors) {
+												  const int cart_rank,
+												  const int ndims,
+												  const int stencil[],
+												  const int n_neighbors,
+												  const int dims[],
+												  const int periods[],
+												  std::vector<int> &neighbors) {
 
   int rank_coord[ndims];
   MPI_Cart_coords(cart_comm, cart_rank, ndims, rank_coord);
@@ -67,9 +68,11 @@ void mpireorderinglib::get_neighbors_from_stencil(MPI_Comm cart_comm,
 }
 
 void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
-								   int &total_offnode_neighbors,
-								   int &max_offnode_neighbors) {
-
+													  int &total_offnode_neighbors,
+													  int &max_offnode_neighbors) {
+  int status;
+  MPI_Topo_test(dist_graph_comm, &status);
+  assert(status == MPI_DIST_GRAPH);
   total_offnode_neighbors = 0;
   max_offnode_neighbors = 0;
 
@@ -169,22 +172,23 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
 }
 
 void mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(MPI_Comm cart_comm, const int ndims,
-										const int stencil[],
-										const int num_neighbors,
-										const int dims[],
-										const int periods[],
-										MPI_Comm *dist_graph_comm) {
+															 const int stencil[],
+															 const int num_neighbors,
+															 const int dims[],
+															 const int periods[],
+															 MPI_Comm *dist_graph_comm) {
 
   int cart_rank;
   MPI_Comm_rank(cart_comm, &cart_rank);
   std::vector<int> real_neighbors{};
   mpireorderinglib::get_neighbors_from_stencil(cart_comm, cart_rank,
-								   ndims, stencil, num_neighbors, dims,
-								   periods, real_neighbors);
+											   ndims, stencil, num_neighbors, dims,
+											   periods, real_neighbors);
 
   int real_neighbors_size = real_neighbors.size();
   int weights[real_neighbors_size];
-  for(int i{0}; i < real_neighbors_size; i++) weights[i] = 0;
+  for (int i{0}; i < real_neighbors_size; i++)
+	weights[i] = 0;
 
   int n_vertices_to_specify{0};
   if (real_neighbors_size) {
@@ -200,4 +204,50 @@ void mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(MPI_Comm cart_comm,
 						MPI_INFO_NULL,
 						0,
 						dist_graph_comm);
+}
+
+void MPIX_Internode_cost(MPI_Comm cart_comm, int &total, int &max, int stencil[], int n_neighbors) {
+  int status;
+  MPI_Topo_test(cart_comm, &status);
+  assert(status == MPI_CART);
+  MPI_Comm dist_graph;
+  int ndims;
+  MPI_Cartdim_get(cart_comm, &ndims);
+  int dims[ndims], periods[ndims], coords[ndims];
+  MPI_Cart_get(cart_comm, ndims, dims, periods, coords);
+  mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(cart_comm,
+														  ndims,
+														  stencil,
+														  n_neighbors,
+														  dims,
+														  periods,
+														  &dist_graph);
+  mpireorderinglib::MPIX_Dist_graph_internode_cost(dist_graph, total, max);
+  MPI_Comm_free(&dist_graph);
+}
+
+void MPIX_Internode_cost(MPI_Comm cart_comm, int &total, int &max) {
+  int status;
+  MPI_Topo_test(cart_comm, &status);
+  assert(status == MPI_CART);
+  int ndims;
+  MPI_Cartdim_get(cart_comm, &ndims);
+  int dims[ndims], periods[ndims], coords[ndims];
+  MPI_Cart_get(cart_comm, ndims, dims, periods, coords);
+  mpireorderinglib::Configuration config;
+  mpireorderinglib::Stencil_Creater stencil_creater;
+  stencil_creater.set_stencil(config.get_str_stencil());
+  std::vector<int> stencil;
+  int n_neighbors{0};
+  stencil_creater.create_stencil(ndims, stencil, &n_neighbors);
+  MPI_Comm dist_graph;
+  mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(cart_comm,
+														  ndims,
+														  stencil.data(),
+														  n_neighbors,
+														  dims,
+														  periods,
+														  &dist_graph);
+  mpireorderinglib::MPIX_Dist_graph_internode_cost(dist_graph, total, max);
+  MPI_Comm_free(&dist_graph);
 }

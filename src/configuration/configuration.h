@@ -30,14 +30,6 @@ public:
   int perform_reordering(MPI_Comm old_comm, const int ndims, const int dims[], const int periods[],
 						 const int stencil[], const int n_neighbors, MPI_Comm *cart_comm) const;
 };
-
-const std::string Configuration::env_alg = "CART_REORDER_ALGORITHM";
-const std::string Configuration::env_stencil = "CART_REORDER_STENCIL";
-const std::string Configuration::env_node_scheme = "CART_REORDER_NODE_AGGREGATION";
-const std::array<std::unique_ptr<mpireorderinglib::ReorderingScheme>, 3>
-	reorder_schemes{std::make_unique<mpireorderinglib::Hyperplane_Reorderer>(),
-					std::make_unique<mpireorderinglib::kd_Tree_Reorderer>(),
-					std::make_unique<mpireorderinglib::Stencil_Strips_Reorderer>()};
 }
 
 #endif
