@@ -3,12 +3,12 @@
 void hyperplane_sum_of_angles(const int stencil[],
 				  const int n_neighbors,
 				  const int ndims,
-				  float angle_values[]) {
+				  double angle_values[]) {
 
   for (int i{0}; i < ndims; i++) {
 	angle_values[i] = 0.0;
   }
-  float relativ_vector_length;
+  double relativ_vector_length;
 
   //O(k)
   for (int k = 0; k < n_neighbors; k++) {
@@ -26,7 +26,7 @@ void hyperplane_sum_of_angles(const int stencil[],
 
 	//calculate the angle between each dimension
 	//O(n)
-	float k_i;
+	double k_i;
 	for (int i = 0; i < ndims; i++) {
 	  k_i = stencil[k * ndims + i] * stencil[k * ndims + i];
 	  angle_values[i] += k_i / relativ_vector_length;
@@ -34,7 +34,7 @@ void hyperplane_sum_of_angles(const int stencil[],
   }
 }
 
-void hyperplane_dimension_order(const float angle_values[],
+void hyperplane_dimension_order(const double angle_values[],
 				const int dims[],
 				const int ndims,
 				int dimension_order[]) {
@@ -48,7 +48,7 @@ void hyperplane_dimension_order(const float angle_values[],
   std::sort(&dimension_order[0], &dimension_order[0] + ndims,
 			[&](const int &j, const int &k) {
 			  if (angle_values[j] == angle_values[k])
-				return dims[j] < dims[k];
+				return dims[j] > dims[k];
 			  else
 				return angle_values[j] < angle_values[k];
 			}
@@ -80,7 +80,7 @@ void base_case_new_coord_calculation(const int ndims,
   }
 }
 
-void update_dimension_order(const float angle_values[],
+void update_dimension_order(const double angle_values[],
 				const int dims[],
 				const int ndims,
 				const int index,
@@ -111,7 +111,7 @@ void hyperplane_internal(const int ndims,
 			 const int my_rank,
 			 int new_rank_coords[],
 			 const int my_partition,
-			 const float angle_values[],
+			 const double angle_values[],
 			 int grid_size,
 			 int dimension_order[],
 			 int partition_id) {
@@ -273,7 +273,7 @@ int MPIX_Hyperplane_comm(MPI_Comm oldcomm,
 
   //Find the best dimension permutation for finding a suitable split
   //O( kn )
-  float angle_values[ndims];
+  double angle_values[ndims];
   hyperplane_sum_of_angles(stencil, n_neighbors,
 			   ndims, angle_values);
 

@@ -45,7 +45,7 @@ void hyperplane_internal(const int ndims,
 		const int my_rank,
 		int new_rank_coords[],
 		const int my_partition,
-		const float angle_values[],
+		const double angle_values[],
 		int grid_size,
 		int dimension_order[],
 		int partition_id = 0);
@@ -57,13 +57,13 @@ void hyperplane_internal(const int ndims,
 void hyperplane_sum_of_angles(const int stencil[],
 		const int n_neighbors,
 		const int ndims,
-		float angle_values[]);
+		double angle_values[]);
 
 
 /* Given an array with the angles between them, sort them 
  * correctly corresponding to the grid size
  */
-void hyperplane_dimension_order(const float angle_values[],
+void hyperplane_dimension_order(const double angle_values[],
 		const int dims[],
 		const int ndims,
 		int dimension_order[]);
@@ -85,7 +85,7 @@ void base_case_new_coord_calculation(const int ndims,
 //we only need to update the rank of the split dimension
 //this can be done in O(n) time
 //TODO: can be done in O(log(n)) time -> binary insert
-void update_dimension_order(const float angle_values[],
+void update_dimension_order(const double angle_values[],
 		const int dims[],
 		const int ndims,
 		const int index,
