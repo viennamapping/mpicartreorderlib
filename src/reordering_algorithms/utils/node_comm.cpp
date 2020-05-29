@@ -6,7 +6,7 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
   MPI_Comm_split_type(oldcomm, MPI_COMM_TYPE_SHARED, 0,
 					  MPI_INFO_NULL, &nodecomm);
 
-  int node_rank, leader_rank;
+  int node_rank, leader_rank, l_n_nodes;
   MPI_Comm_rank(nodecomm, &node_rank);
 
   int color = MPI_UNDEFINED;
@@ -17,14 +17,14 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
 
   //get number of nodes
   if (node_rank == 0) {
-	MPI_Comm_size(leadercomm, n_nodes);
+	MPI_Comm_size(leadercomm, &l_n_nodes);
 	MPI_Comm_rank(leadercomm, &leader_rank);
   }
 
-  MPI_Bcast(n_nodes, 1, MPI_INT, 0, nodecomm);
+  MPI_Bcast(&l_n_nodes, 1, MPI_INT, 0, nodecomm);
   MPI_Bcast(&leader_rank, 1, MPI_INT, 0, nodecomm);
 
-  int node_size, node_sizes[*n_nodes];
+  int node_size, node_sizes[l_n_nodes];
   MPI_Comm_size(nodecomm, &node_size);
 
   //gather the node sizes on leader comm
@@ -34,28 +34,28 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
   }
 
   //Broadcast the node sizes along the node
-  MPI_Bcast(node_sizes, *n_nodes, MPI_INT,
+  MPI_Bcast(node_sizes, l_n_nodes, MPI_INT,
 			0, nodecomm);
 
   switch (scheme) {
   case mpireorderinglib::NODES_MIN:
 	*ppn = node_sizes[0];
-	for (int i{1}; i < *n_nodes; i++) {
+	for (int i{1}; i < l_n_nodes; i++) {
 	  if (node_sizes[i] < *ppn)
 		*ppn = node_sizes[i];
 	}
 	break;
   case mpireorderinglib::NODES_MEAN:
 	*ppn = node_sizes[0];
-	for (int i{1}; i < *n_nodes; i++) {
+	for (int i{1}; i < l_n_nodes; i++) {
 	  *ppn += node_sizes[i];
 	}
-	assert((*n_nodes) != 0);
-	(*ppn) /= (*n_nodes);
+	assert(l_n_nodes != 0);
+	(*ppn) /= l_n_nodes;
 	break;
   case mpireorderinglib::NODES_MAX:
 	*ppn = node_sizes[0];
-	for (int i{1}; i < *n_nodes; i++) {
+	for (int i{1}; i < l_n_nodes; i++) {
 	  if (node_sizes[i] > *ppn)
 		*ppn = node_sizes[i];
 	}
@@ -71,6 +71,7 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
   if (node_rank == 0) {
 	MPI_Comm_free(&leadercomm);
   }
+  if (n_nodes != nullptr) *n_nodes = l_n_nodes;
   MPI_Comm_free(&nodecomm);
   return err;
 }

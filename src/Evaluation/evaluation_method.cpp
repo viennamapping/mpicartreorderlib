@@ -139,7 +139,6 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
   // Only the destination targets are counted
   for (int i{0}; i < n_dest; i++) {
 	int neighbor = dest[i];
-
 	if (neighbor == MPI_PROC_NULL)
 	  continue;
 

@@ -15,7 +15,7 @@ private:
 public:
   Stencil_Strips_Reorderer();
   virtual std::string get_name();
-  int perform_reordering(MPI_Comm old_comm, const int ndims, const int dims[], const int periods[],
+  virtual int perform_reordering(MPI_Comm old_comm, const int ndims, const int dims[], const int periods[],
 								  const int stencil[], const int n_neighbors, MPI_Comm *cart_comm,
 								  mpireorderinglib::node_approximation_schemes scheme = mpireorderinglib::node_approximation_schemes::NODES_MEAN);
 };
