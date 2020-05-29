@@ -116,6 +116,11 @@ void hyperplane_internal(const int ndims,
 			 int dimension_order[],
 			 int partition_id) {
   hyperplane_dimension_order(angle_values, dims, ndims, dimension_order);
+  std::string s = "Dims = ";
+  for(int i {0}; i < ndims; i++) s += std::to_string(dims[i]) + " ";
+  s += " Prefered dimension order = ";
+  for(int i {0}; i < ndims; i++) s+= std::to_string(dimension_order[i]) + " ";
+  spdlog::info(s);
   //Entering base case is either having two
   //nodes or one and then fill it up
   if (grid_size <= 2 * n_processes_p_node) {

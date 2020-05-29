@@ -7,6 +7,7 @@
 #include "definitions.h"
 #include "reordering_algorithms/utils/node_comm.h"
 #include "reordering_algorithms/utils/utils.h"
+#include "spdlog/spdlog.h"
 
 //creates the hyperplane communicator
 int MPIX_Hyperplane_comm(MPI_Comm oldcomm,
