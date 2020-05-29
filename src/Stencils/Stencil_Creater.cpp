@@ -54,8 +54,7 @@ void extract_stencil_from_string(const std::string& str, std::vector<int>& v, in
 }
 
 void mpireorderinglib::Stencil_Creater::create_stencil(const int ndims, std::vector<int> &stencil, int* n_neighbors) {
-  spdlog::info("Stencil is " + str_stencil);
-	if ( str_stencil.compare("UNDEFINED") == 0 ) {
+	if ( str_stencil == "UNDEFINED" ) {
 	  spdlog::info("No stencil pattern defined. Proceeding with ndims dimensional nearest neighbor stencil.");
 	  mpireorderinglib::five_point_stencil(stencil, ndims, n_neighbors);
 	} else {
