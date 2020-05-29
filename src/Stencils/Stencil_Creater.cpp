@@ -64,7 +64,7 @@ void mpireorderinglib::Stencil_Creater::create_stencil(const int ndims, std::vec
 void mpireorderinglib::Stencil_Creater::set_stencil(std::basic_string<char> str) {
 	str_stencil = str;
 }
-mpireorderinglib::Stencil_Creater::Stencil_Creater() : str_stencil("FIVE_POINT") {
+mpireorderinglib::Stencil_Creater::Stencil_Creater() : str_stencil("UNDEFINED") {
 
 }
 mpireorderinglib::Stencil_Creater::Stencil_Creater(std::string &str) {
