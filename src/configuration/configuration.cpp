@@ -6,7 +6,7 @@ mpireorderinglib::Configuration::Configuration() :
 	str_stencil("UNDEFINED") {
   const char *flag = getenv(env_alg.data());
   if (flag) {
-    str_alg = flag;
+	str_alg = flag;
 	spdlog::info("Read " + str_alg + " as algorithm");
   }
   flag = getenv(env_stencil.data());
@@ -16,7 +16,7 @@ mpireorderinglib::Configuration::Configuration() :
   }
   flag = getenv(env_node_scheme.data());
   if (flag) {
-    str_node_scheme = flag;
+	str_node_scheme = flag;
 	spdlog::info("Read " + str_node_scheme + " as node scheme");
   }
 }
@@ -32,6 +32,7 @@ int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
 	  mpireorderinglib::string_to_node_approximation_schemes(str_node_scheme);
   for (const std::unique_ptr<mpireorderinglib::ReorderingScheme> &ptr : reorder_schemes) {
 	if (ptr->get_name() == str_alg) {
+	  spdlog::info("Perform reordering with " + str_alg);
 	  return ptr->perform_reordering(old_comm, ndims, dims, periods, stencil,
 									 n_neighbors, cart_comm, scheme);
 	}
@@ -81,5 +82,5 @@ const std::string mpireorderinglib::Configuration::env_stencil = "CART_REORDER_S
 const std::string mpireorderinglib::Configuration::env_node_scheme = "CART_REORDER_NODE_AGGREGATION";
 const std::array<std::unique_ptr<mpireorderinglib::ReorderingScheme>, 3>
 	mpireorderinglib::Configuration::reorder_schemes{std::make_unique<mpireorderinglib::Hyperplane_Reorderer>(),
-					std::make_unique<mpireorderinglib::kd_Tree_Reorderer>(),
-					std::make_unique<mpireorderinglib::Stencil_Strips_Reorderer>()};
+													 std::make_unique<mpireorderinglib::kd_Tree_Reorderer>(),
+													 std::make_unique<mpireorderinglib::Stencil_Strips_Reorderer>()};

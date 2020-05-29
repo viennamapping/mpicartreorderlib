@@ -49,6 +49,9 @@ void extract_stencil_from_string(const std::string& str, std::vector<int>& v, in
     spdlog::info("New stencil = " + str_v);
   }
   *n_neighbors = v.size();
+  std::string s = "";
+  for(int i : v) s += std::to_string(i) + " ";
+  spdlog::info("Stencil is " + s);
 }
 }
 
