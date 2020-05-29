@@ -154,6 +154,8 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
 	}
   }
 
+  spdlog::info("Rank " + std::to_string(dist_graph_rank) + " has " + std::to_string(local_offnode_neighbors) + " off node neighbors");
+
   int node_offnode_comm_size;
   MPI_Allreduce(&local_offnode_neighbors,
 				&node_offnode_comm_size,
