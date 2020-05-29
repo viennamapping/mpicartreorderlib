@@ -1,34 +1,22 @@
 #include "configuration/configuration.h"
 
-namespace mpireorderinglib {
-void string_split(std::string &&str, std::string &rhs, char delimiter = '=') {
-  for (int i{0}; i < str.size(); i++) {
-	if (str[i] == delimiter) {
-	  rhs = str.substr(i + 1);
-	  break;
-	}
-  }
-};
-}
-
 mpireorderinglib::Configuration::Configuration() :
 	str_alg("STENCIL_STRIPS"),
 	str_node_scheme("NODES_MEAN"),
 	str_stencil("UNDEFINED") {
   const char *flag = getenv(env_alg.data());
   if (flag) {
-	mpireorderinglib::string_split(flag, str_alg);
+    str_alg = flag;
 	spdlog::info("Read " + str_alg + " as algorithm");
   }
   flag = getenv(env_stencil.data());
   if (flag) {
-	mpireorderinglib::string_split(flag, str_stencil);
 	str_stencil = flag;
 	spdlog::info("Read " + str_stencil + " as stencil");
   }
   flag = getenv(env_node_scheme.data());
   if (flag) {
-	mpireorderinglib::string_split(flag, str_node_scheme);
+    str_node_scheme = flag;
 	spdlog::info("Read " + str_node_scheme + " as node scheme");
   }
 }

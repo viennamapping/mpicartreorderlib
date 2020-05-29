@@ -14,6 +14,7 @@
 #include "Stencils/Stencil_Creater.h"
 #include "spdlog/spdlog.h"
 
+/*
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -26,6 +27,7 @@ void MPIX_Internode_cost(MPI_Comm cart_comm, int* total, int* max);
 #ifdef __cplusplus
 }
 #endif
+*/
 
 namespace mpireorderinglib {
 class Configuration {
