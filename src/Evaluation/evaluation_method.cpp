@@ -65,6 +65,9 @@ void mpireorderinglib::get_neighbors_from_stencil(MPI_Comm cart_comm,
 	  neighbors.push_back(possible_neighbors[i]);
 	}
   }
+  std::string s = "";
+  for(int i : neighbors) s += std::to_string(i) + " ";
+  spdlog::info("Rank " + std::to_string(cart_rank) + " has neighbors " + s);
 }
 
 void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,

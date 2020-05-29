@@ -9,9 +9,11 @@
 #include <cassert>
 #include <vector>
 
+#include "spdlog/spdlog.h"
 #include "configuration/configuration.h"
 #include "Stencils/Stencil_Creater.h"
 
+/*
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,6 +26,7 @@ void MPIX_Internode_cost(MPI_Comm cart_comm, int* total, int* max);
 #ifdef __cplusplus
 }
 #endif
+*/
 
 namespace mpireorderinglib {
 void get_neighbors_from_stencil(MPI_Comm cart_comm,
