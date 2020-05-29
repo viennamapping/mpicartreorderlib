@@ -249,6 +249,9 @@ void MPIX_Internode_cost(MPI_Comm cart_comm, int *total, int *max) {
   int n_neighbors{0};
   stencil_creater.create_stencil(ndims, stencil, &n_neighbors);
   MPI_Comm dist_graph;
+  std::string s = "";
+  for(int i : stencil) s += std::to_string(i) + " ";
+  spdlog::info("Stencil in Cost func is " + s);
   mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(cart_comm,
 														  ndims,
 														  stencil.data(),
