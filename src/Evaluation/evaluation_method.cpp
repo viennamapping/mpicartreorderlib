@@ -206,6 +206,9 @@ void mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(MPI_Comm cart_comm,
 						dist_graph_comm);
 }
 
+#ifdef __cplusplus
+extern "C"
+#endif
 void MPIX_Internode_cost_stencil(MPI_Comm cart_comm, int *total, int *max, int stencil[], int n_neighbors) {
   int status;
   MPI_Topo_test(cart_comm, &status);
@@ -226,6 +229,9 @@ void MPIX_Internode_cost_stencil(MPI_Comm cart_comm, int *total, int *max, int s
   MPI_Comm_free(&dist_graph);
 }
 
+#ifdef __cplusplus
+extern "C"
+#endif
 void MPIX_Internode_cost(MPI_Comm cart_comm, int *total, int *max) {
   int status;
   MPI_Topo_test(cart_comm, &status);

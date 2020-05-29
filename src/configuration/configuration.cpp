@@ -54,6 +54,9 @@ int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
 													periods, stencil, n_neighbors, cart_comm, scheme);
 }
 
+#ifdef __cplusplus
+extern "C"
+#endif
 int MPIX_Cart_Comm_stencil(MPI_Comm old_comm, int ndims, const int dims[],
 						   const int periods[], int reorder, const int stencil[],
 						   const int n_neighbors, MPI_Comm *comm_cart) {
@@ -65,6 +68,9 @@ std::string mpireorderinglib::Configuration::get_str_stencil() const {
   return str_stencil;
 }
 
+#ifdef __cplusplus
+extern "C"
+#endif
 int MPI_Cart_create(MPI_Comm old_comm, int ndims, const int dims[],
 					const int periods[], int reorder, MPI_Comm *comm_cart) {
   if (reorder == 0) {
