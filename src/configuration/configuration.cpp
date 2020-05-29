@@ -1,7 +1,7 @@
 #include "configuration/configuration.h"
 
 namespace mpireorderinglib {
-void string_split(std::string &&str, std::string &rhs, char delimiter = ':') {
+void string_split(std::string &&str, std::string &rhs, char delimiter = '=') {
   for (int i{0}; i < str.size(); i++) {
 	if (str[i] == delimiter) {
 	  rhs = str.substr(i + 1);
