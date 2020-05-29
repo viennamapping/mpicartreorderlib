@@ -22,8 +22,7 @@ void mpireorderinglib::get_neighbors_from_stencil(MPI_Comm cart_comm,
   //neighbors
   int possible_neighbors[n_neighbors];
 
-  for (int i{0}; i < n_neighbors; i++)
-	possible_neighbors[i] = -2;
+  for (int i{0}; i < n_neighbors; i++) possible_neighbors[i] = -2;
   int index = -1;
   bool periodic_checker;
 
@@ -76,6 +75,8 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
   int status;
   MPI_Topo_test(dist_graph_comm, &status);
   assert(status == MPI_DIST_GRAPH);
+  spdlog::info("Value written in total before " + std::to_string(*total_offnode_neighbors));
+  spdlog::info("Value written in max before " + std::to_string(*max_offnode_neighbors));
   *total_offnode_neighbors = 0;
   *max_offnode_neighbors = 0;
 
@@ -189,13 +190,10 @@ void mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(MPI_Comm cart_comm,
 
   int real_neighbors_size = real_neighbors.size();
   int weights[real_neighbors_size];
-  for (int i{0}; i < real_neighbors_size; i++)
-	weights[i] = 0;
+  for (int i{0}; i < real_neighbors_size; i++) weights[i] = 0;
 
   int n_vertices_to_specify{0};
-  if (real_neighbors_size) {
-	n_vertices_to_specify = 1;
-  }
+  if (real_neighbors_size) n_vertices_to_specify = 1;
 
   MPI_Dist_graph_create(cart_comm,
 						n_vertices_to_specify,
