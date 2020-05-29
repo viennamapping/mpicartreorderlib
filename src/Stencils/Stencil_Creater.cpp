@@ -7,7 +7,6 @@
 namespace mpireorderinglib {
 void five_point_stencil(std::vector< int >& stencil, const int ndims,
 						int * n_neighbors){
-  spdlog::info("Came into five_point with " + std::to_string(ndims));
   int stencil_size = 2*ndims*ndims + ndims;
   *n_neighbors = 2*ndims + 1;
   int dim_to_set = 0;
@@ -62,7 +61,7 @@ void mpireorderinglib::Stencil_Creater::create_stencil(const int ndims, std::vec
 		mpireorderinglib::extract_stencil_from_string(str_stencil, stencil, n_neighbors, ndims);
 	}
 }
-void mpireorderinglib::Stencil_Creater::set_stencil(std::basic_string<char> str) {
+void mpireorderinglib::Stencil_Creater::set_stencil(std::string& str) {
 	str_stencil = str;
 }
 mpireorderinglib::Stencil_Creater::Stencil_Creater() : str_stencil("UNDEFINED") {
