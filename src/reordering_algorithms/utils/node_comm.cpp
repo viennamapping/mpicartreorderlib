@@ -6,7 +6,7 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
   MPI_Comm_split_type(oldcomm, MPI_COMM_TYPE_SHARED, 0,
 					  MPI_INFO_NULL, &nodecomm);
 
-  int node_rank, leader_rank, l_n_nodes;
+  int node_rank, leader_rank, l_n_nodes, l_ppn;
   MPI_Comm_rank(nodecomm, &node_rank);
 
   int color = MPI_UNDEFINED;
@@ -39,25 +39,25 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
 
   switch (scheme) {
   case mpireorderinglib::NODES_MIN:
-	*ppn = node_sizes[0];
+	l_ppn = node_sizes[0];
 	for (int i{1}; i < l_n_nodes; i++) {
-	  if (node_sizes[i] < *ppn)
-		*ppn = node_sizes[i];
+	  if (node_sizes[i] < l_ppn)
+		l_ppn = node_sizes[i];
 	}
 	break;
   case mpireorderinglib::NODES_MEAN:
-	*ppn = node_sizes[0];
+	l_ppn = node_sizes[0];
 	for (int i{1}; i < l_n_nodes; i++) {
-	  *ppn += node_sizes[i];
+	  l_ppn += node_sizes[i];
 	}
 	assert(l_n_nodes != 0);
-	(*ppn) /= l_n_nodes;
+	(l_ppn) /= l_n_nodes;
 	break;
   case mpireorderinglib::NODES_MAX:
-	*ppn = node_sizes[0];
+	l_ppn = node_sizes[0];
 	for (int i{1}; i < l_n_nodes; i++) {
 	  if (node_sizes[i] > *ppn)
-		*ppn = node_sizes[i];
+		l_ppn = node_sizes[i];
 	}
 	break;
   }
@@ -72,6 +72,7 @@ int mpireorderinglib::MPIX_Node_comm (MPI_Comm oldcomm, MPI_Comm* new_comm,
 	MPI_Comm_free(&leadercomm);
   }
   if (n_nodes != nullptr) *n_nodes = l_n_nodes;
+  if (ppn != nullptr) *ppn = l_ppn;
   MPI_Comm_free(&nodecomm);
   return err;
 }
