@@ -23,6 +23,7 @@ mpireorderinglib::Configuration::Configuration() :
   flag = getenv(env_stencil.data());
   if (flag) {
 	mpireorderinglib::string_split(flag, str_stencil);
+	str_stencil = flag;
 	spdlog::info("Read " + str_stencil + " as stencil");
   }
   flag = getenv(env_node_scheme.data());
