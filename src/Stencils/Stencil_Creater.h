@@ -20,7 +20,7 @@ public:
   Stencil_Creater();
   explicit Stencil_Creater(std::string& str);
   void create_stencil(int ndims, std::vector< int >& stencil, int* n_neighbors);
-  void set_stencil(std::basic_string<char> str);
+  void set_stencil(std::string str);
 };
 }
 
