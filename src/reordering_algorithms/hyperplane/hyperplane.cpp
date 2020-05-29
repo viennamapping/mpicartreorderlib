@@ -48,7 +48,7 @@ void hyperplane_dimension_order(const float angle_values[],
   std::sort(&dimension_order[0], &dimension_order[0] + ndims,
 			[&](const int &j, const int &k) {
 			  if (angle_values[j] == angle_values[k])
-				return dims[j] > dims[k];
+				return dims[j] < dims[k];
 			  else
 				return angle_values[j] < angle_values[k];
 			}
