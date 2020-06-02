@@ -38,6 +38,7 @@ private:
   static const std::string env_alg;
   static const std::string env_stencil;
   static const std::string env_node_scheme;
+  static const std::string env_log_level;
   static const std::array<std::unique_ptr<mpireorderinglib::ReorderingScheme>, 3> reorder_schemes;
 public:
   Configuration();

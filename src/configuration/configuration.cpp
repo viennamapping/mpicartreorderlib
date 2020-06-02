@@ -4,7 +4,13 @@ mpireorderinglib::Configuration::Configuration() :
 	str_alg("STENCIL_STRIPS"),
 	str_node_scheme("NODES_MEAN"),
 	str_stencil("UNDEFINED") {
-  const char *flag = getenv(env_alg.data());
+  const char *flag = getenv(env_log_level.data());
+  spdlog::set_level(spdlog::level::off);
+  if (flag) {
+    if (std::strcmp(flag, "INFO")) spdlog::set_level(spdlog::level::info);
+    else if (std::strcmp(flag, "WARN")) spdlog::set_level(spdlog::level::warn);
+  }
+  flag = getenv(env_alg.data());
   if (flag) {
 	str_alg = flag;
 	spdlog::info("Read " + str_alg + " as algorithm");
@@ -34,7 +40,8 @@ int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
 	if (ptr->get_name() == str_alg) {
 	  spdlog::info("Perform reordering with " + str_alg);
 	  std::string s = "Configuration> Stencil = ";
-	  for(int i {0}; i < n_neighbors*ndims; i++) s += stencil[i] + " ";
+	  for (int i{0}; i < n_neighbors * ndims; i++)
+		s += stencil[i] + " ";
 	  spdlog::info(s);
 	  return ptr->perform_reordering(old_comm, ndims, dims, periods, stencil,
 									 n_neighbors, cart_comm, scheme);
@@ -69,8 +76,8 @@ int MPI_Cart_create(MPI_Comm old_comm, int ndims, const int dims[],
   if (reorder == 0) {
 	return PMPI_Cart_create(old_comm, ndims, dims, periods, reorder, comm_cart);
   } else {
-	const mpireorderinglib::Configuration config;
-	mpireorderinglib::Stencil_Creater stencil_creator;
+	static mpireorderinglib::Configuration config;
+	static mpireorderinglib::Stencil_Creater stencil_creator;
 	stencil_creator.set_stencil(config.get_str_stencil());
 	std::vector<int> stencil;
 	int n_neighbors{0};
@@ -83,6 +90,7 @@ int MPI_Cart_create(MPI_Comm old_comm, int ndims, const int dims[],
 const std::string mpireorderinglib::Configuration::env_alg = "CART_REORDER_ALGORITHM";
 const std::string mpireorderinglib::Configuration::env_stencil = "CART_REORDER_STENCIL";
 const std::string mpireorderinglib::Configuration::env_node_scheme = "CART_REORDER_NODE_AGGREGATION";
+const std::string mpireorderinglib::Configuration::env_log_level = "CART_REORDER_LOG_LEVEL";
 const std::array<std::unique_ptr<mpireorderinglib::ReorderingScheme>, 3>
 	mpireorderinglib::Configuration::reorder_schemes{std::make_unique<mpireorderinglib::Hyperplane_Reorderer>(),
 													 std::make_unique<mpireorderinglib::kd_Tree_Reorderer>(),
