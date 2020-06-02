@@ -33,6 +33,9 @@ int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
   for (const std::unique_ptr<mpireorderinglib::ReorderingScheme> &ptr : reorder_schemes) {
 	if (ptr->get_name() == str_alg) {
 	  spdlog::info("Perform reordering with " + str_alg);
+	  std::string s = "Configuration> Stencil = ";
+	  for(int i {0}; i < n_neighbors*ndims; i++) s += stencil[i] + " ";
+	  spdlog::info(s);
 	  return ptr->perform_reordering(old_comm, ndims, dims, periods, stencil,
 									 n_neighbors, cart_comm, scheme);
 	}
