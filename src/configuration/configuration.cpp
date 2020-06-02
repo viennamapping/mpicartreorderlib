@@ -7,8 +7,8 @@ mpireorderinglib::Configuration::Configuration() :
   const char *flag = getenv(env_log_level.data());
   spdlog::set_level(spdlog::level::off);
   if (flag) {
-    if (std::strcmp(flag, "INFO")) spdlog::set_level(spdlog::level::info);
-    else if (std::strcmp(flag, "WARN")) spdlog::set_level(spdlog::level::warn);
+    if (std::strcmp(flag, "INFO") == 0) spdlog::set_level(spdlog::level::info);
+    else if (std::strcmp(flag, "WARN") == 0) spdlog::set_level(spdlog::level::warn);
   }
   flag = getenv(env_alg.data());
   if (flag) {
