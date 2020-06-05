@@ -8,7 +8,7 @@ namespace mpireorderinglib {
   std::shared_ptr<spdlog::logger> Logger::m_Logger;
 
   void Logger::Init() {
-    spdlog::set_pattern("%^[%T} %n: %v%$");
+    spdlog::set_pattern("%^[%T:%l] %n: %v%$");
     m_Logger = spdlog::stdout_color_mt("CARTREORDER");
     m_Logger->set_level(spdlog::level::info);
   }
