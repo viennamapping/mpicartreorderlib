@@ -10,12 +10,14 @@ namespace mpireorderinglib {
   void Logger::Init() {
     spdlog::set_pattern("%^[%T} %n: %v%$");
     m_Logger = spdlog::stdout_color_mt("CARTREORDER");
-    m_Logger->set_level(spdlog::level::trace);
+    m_Logger->set_level(spdlog::level::info);
   }
+
 std::shared_ptr<spdlog::logger> &Logger::GetLogger() {
   return m_Logger;
 }
-void Logger::set_log_level(int lvl) {
+}
+void mpireorderinglib::Logger::set_log_level(int lvl) {
     switch (lvl) {
     case 0:
 	  m_Logger->set_level(spdlog::level::trace);
@@ -41,5 +43,4 @@ void Logger::set_log_level(int lvl) {
     default:
       m_Logger->set_level(spdlog::level::off);
 	}
-}
 }

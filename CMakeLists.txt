@@ -9,6 +9,7 @@ SET(CMAKE_CXX_COMPILER mpicxx)
 SET(MY_COMPILE_FLAGS "")
 
 if(LOGGING)
+    message("Setting LOGGING to true")
     SET(MY_COMPILE_FLAGS "${MY_COMPILE_FLAGS} -DLOGGING")
 endif()
 
@@ -21,8 +22,6 @@ set(CMAKE_INSTALL_LIBDIR "${CMAKE_SOURCE_DIR}/lib")
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}    "include")
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} "src")
-
-set(MY_COMPILE_FLAGS "")
 
 set(REORDERING_ALGORITHMS
         ${SRC_DIR}/reordering_algorithms/hyperplane/hyperplane.cpp
@@ -44,8 +43,8 @@ add_library(mpicartreorderlib SHARED
         ${REORDERING_ALGORITHMS}
         ${SETUP_CONFIGURATION})
 
-set_target_properties(mpicartreorderlib PROPERTIES SOVERSION 0)
-set_target_properties(mpicartreorderlib PROPERTIES PUBLIC_HEADER include/mpicartreorder.h)
+set_target_properties(mpicartreorderlib PROPERTIES SOVERSION 0 COMPILE_FLAGS "${MY_COMPILE_FLAGS}")
+set_target_properties(mpicartreorderlib PROPERTIES PUBLIC_HEADER include/mpicartreorder.h COMPILE_FLAGS "${MY_COMPILE_FLAGS}")
 
 install(TARGETS mpicartreorderlib
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

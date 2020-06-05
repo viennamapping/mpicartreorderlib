@@ -13,7 +13,7 @@ namespace mpireorderinglib {
   class Logger {
   public:
     static void Init();
-    inline static std::shared_ptr<spdlog::logger>& GetLogger();
+    static std::shared_ptr<spdlog::logger>& GetLogger();
     static void set_log_level(int lvl);
 
   private:
@@ -23,9 +23,9 @@ namespace mpireorderinglib {
 
 //Logger Macros
 #ifdef LOGGING
-#define CARTREORDER_ERROR(...) ::mpireorderling::Logger::GetLogger()->error(_VA_ARGS__)
-#define CARTREORDER_INFO(...) ::mpireorderling::Logger::GetLogger()->info(_VA_ARGS__)
-#define CARTREORDER_WARN(...) ::mpireorderling::Logger::GetLogger()->warn(_VA_ARGS__)
+#define CARTREORDER_ERROR(x) mpireorderinglib::Logger::GetLogger()->error(x)
+#define CARTREORDER_INFO(x) mpireorderinglib::Logger::GetLogger()->info(x)
+#define CARTREORDER_WARN(x) mpireorderinglib::Logger::GetLogger()->warn(x)
 #else
 #define CARTREORDER_ERROR(...)
 #define CARTREORDER_INFO(...)
