@@ -36,31 +36,35 @@ void extract_stencil_from_string(const std::string& str, std::vector<int>& v, in
     try {
       v.push_back(std::atoi(token.data()));
     } catch (std::exception& e) {
-      spdlog::error("Tried to convert " + token + " to int");
+      CARTREORDER_ERROR("Tried to convert " + token + " to int");
       std::cerr << e.what() << std::endl;
     }
   }
 
   if (v.size() % ndims != 0) {
-    spdlog::warn("Passed stencil is not a multiple of the number of dimensions! Padding with zeros!");
+    CARTREORDER_WARN("Passed stencil is not a multiple of the number of dimensions! Padding with zeros!");
     while (v.size() % ndims) v.push_back(0);
+#ifdef LOGGING
     std::string str_v = "";
     for (int i : v) str_v += std::to_string(i) + " ";
-    spdlog::info("New stencil = " + str_v);
+    CARTREORDER_INFO("New stencil = " + str_v);
+#endif
   }
   *n_neighbors = v.size()/ndims;
+#ifdef LOGGING
   std::string s = "";
   for(int i : v) s += std::to_string(i) + " ";
-  spdlog::info("Stencil is " + s);
+  CARTREORDER_INFO("Stencil is " + s);
+#endif
 }
 }
 
 void mpireorderinglib::Stencil_Creater::create_stencil(const int ndims, std::vector<int> &stencil, int* n_neighbors) {
 	if ( str_stencil == "UNDEFINED" ) {
-	  spdlog::info("No stencil pattern defined. Proceeding with ndims dimensional nearest neighbor stencil.");
+	  CARTREORDER_INFO("No stencil pattern defined. Proceeding with ndims dimensional nearest neighbor stencil.");
 	  mpireorderinglib::five_point_stencil(stencil, ndims, n_neighbors);
 	} else {
-		spdlog::info("Try to build stencil from " + str_stencil);
+		CARTREORDER_INFO("Try to build stencil from " + str_stencil);
 		mpireorderinglib::extract_stencil_from_string(str_stencil, stencil, n_neighbors, ndims);
 	}
 }

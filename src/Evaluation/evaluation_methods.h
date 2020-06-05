@@ -9,7 +9,7 @@
 #include <cassert>
 #include <vector>
 
-#include "spdlog/spdlog.h"
+#include "Log/Logger.h"
 #include "configuration/configuration.h"
 #include "Stencils/Stencil_Creater.h"
 

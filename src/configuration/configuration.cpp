@@ -4,26 +4,28 @@ mpireorderinglib::Configuration::Configuration() :
 	str_alg("STENCIL_STRIPS"),
 	str_node_scheme("NODES_MEAN"),
 	str_stencil("UNDEFINED") {
+  if (!logSet) {
+    mpireorderinglib::Logger::Init();
+    logSet = true;
+  }
   const char *flag = getenv(env_log_level.data());
-  spdlog::set_level(spdlog::level::off);
   if (flag) {
-    if (std::strcmp(flag, "INFO") == 0) spdlog::set_level(spdlog::level::info);
-    else if (std::strcmp(flag, "WARN") == 0) spdlog::set_level(spdlog::level::warn);
+    mpireorderinglib::Logger::set_log_level(std::atoi(flag));
   }
   flag = getenv(env_alg.data());
   if (flag) {
 	str_alg = flag;
-	spdlog::info("Read " + str_alg + " as algorithm");
+	CARTREORDER_INFO("Read " + str_alg + " as algorithm");
   }
   flag = getenv(env_stencil.data());
   if (flag) {
 	str_stencil = flag;
-	spdlog::info("Read " + str_stencil + " as stencil");
+	CARTREORDER_INFO("Read " + str_stencil + " as stencil");
   }
   flag = getenv(env_node_scheme.data());
   if (flag) {
 	str_node_scheme = flag;
-	spdlog::info("Read " + str_node_scheme + " as node scheme");
+	CARTREORDER_INFO("Read " + str_node_scheme + " as node scheme");
   }
 }
 
@@ -38,16 +40,18 @@ int mpireorderinglib::Configuration::perform_reordering(MPI_Comm old_comm,
 	  mpireorderinglib::string_to_node_approximation_schemes(str_node_scheme);
   for (const std::unique_ptr<mpireorderinglib::ReorderingScheme> &ptr : reorder_schemes) {
 	if (ptr->get_name() == str_alg) {
-	  spdlog::info("Perform reordering with " + str_alg);
+	  CARTREORDER_INFO("Perform reordering with " + str_alg);
+#ifdef LOGGING
 	  std::string s = "Configuration> Stencil = ";
 	  for (int i{0}; i < n_neighbors * ndims; i++)
 		s += stencil[i] + " ";
-	  spdlog::info(s);
+	  CARTREORDER_INFO(s);
+#endif
 	  return ptr->perform_reordering(old_comm, ndims, dims, periods, stencil,
 									 n_neighbors, cart_comm, scheme);
 	}
   }
-  spdlog::warn("Reordering Algorithm not found!"
+  CARTREORDER_WARN("Reordering Algorithm not found!"
 			   " Performing Reordering with Stencil Strips");
 
   return reorder_schemes.back()->perform_reordering(old_comm, ndims, dims,
@@ -87,6 +91,7 @@ int MPI_Cart_create(MPI_Comm old_comm, int ndims, const int dims[],
   }
 }
 
+bool mpireorderinglib::Configuration::logSet = false;
 const std::string mpireorderinglib::Configuration::env_alg = "CART_REORDER_ALGORITHM";
 const std::string mpireorderinglib::Configuration::env_stencil = "CART_REORDER_STENCIL";
 const std::string mpireorderinglib::Configuration::env_node_scheme = "CART_REORDER_NODE_AGGREGATION";

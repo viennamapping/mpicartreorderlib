@@ -12,22 +12,7 @@
 #include "definitions.h"
 #include "reordering_algorithms/include_reodering_schemes.h"
 #include "Stencils/Stencil_Creater.h"
-#include "spdlog/spdlog.h"
-
-/*
-#ifdef __cplusplus
-extern "C" {
-#endif
-int MPIX_Cart_comm_stencil(MPI_Comm comm_old, int ndims, const int dims[],
-						   const int periods[], int reorder, const int stencil[],
-						   const int n_neighbors, MPI_Comm *comm_cart);
-
-void MPIX_Internode_cost_stencil(MPI_Comm cart_comm, int* total, int* max, int stencil[], int n_neighbors);
-void MPIX_Internode_cost(MPI_Comm cart_comm, int* total, int* max);
-#ifdef __cplusplus
-}
-#endif
-*/
+#include "Log/Logger.h"
 
 namespace mpireorderinglib {
 class Configuration {
@@ -35,6 +20,7 @@ private:
   std::string str_alg;
   std::string str_stencil;
   std::string str_node_scheme;
+  static bool logSet;
   static const std::string env_alg;
   static const std::string env_stencil;
   static const std::string env_node_scheme;

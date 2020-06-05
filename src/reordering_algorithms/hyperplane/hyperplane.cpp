@@ -116,11 +116,6 @@ void hyperplane_internal(const int ndims,
 			 int dimension_order[],
 			 int partition_id) {
   hyperplane_dimension_order(angle_values, dims, ndims, dimension_order);
-  std::string s = "Dims = ";
-  for(int i {0}; i < ndims; i++) s += std::to_string(dims[i]) + " ";
-  s += " Prefered dimension order = ";
-  for(int i {0}; i < ndims; i++) s+= std::to_string(dimension_order[i]) + " ";
-  spdlog::info(s);
   //Entering base case is either having two
   //nodes or one and then fill it up
   if (grid_size <= 2 * n_processes_p_node) {
@@ -233,9 +228,6 @@ int MPIX_Hyperplane_comm(MPI_Comm oldcomm,
   if (oldcomm == MPI_COMM_NULL)
 	return 0;
 
-  std::string s = "Hyperplane> Stencil: ";
-  for (int i = 0; i < n_neighbors*ndims; i++) s += std::to_string(stencil[i]) + " ";
-  spdlog::info(s);
   int n_nodes, n_processes_p_node, my_partition;
   MPI_Comm node_world_comm;
   mpireorderinglib::MPIX_Node_comm(oldcomm,

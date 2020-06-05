@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "spdlog/spdlog.h"
+#include "Log/Logger.h"
 
 namespace mpireorderinglib {
 class Stencil_Creater {

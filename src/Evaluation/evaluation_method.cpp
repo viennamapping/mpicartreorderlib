@@ -66,7 +66,7 @@ void mpireorderinglib::get_neighbors_from_stencil(MPI_Comm cart_comm,
   }
   std::string s = "";
   for(int i : neighbors) s += std::to_string(i) + " ";
-  spdlog::info("Rank " + std::to_string(cart_rank) + " has neighbors " + s);
+  CARTREORDER_INFO("Rank " + std::to_string(cart_rank) + " has neighbors " + s);
 }
 
 void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
@@ -75,8 +75,8 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
   int status;
   MPI_Topo_test(dist_graph_comm, &status);
   assert(status == MPI_DIST_GRAPH);
-  spdlog::info("Value written in total before " + std::to_string(*total_offnode_neighbors));
-  spdlog::info("Value written in max before " + std::to_string(*max_offnode_neighbors));
+  CARTREORDER_INFO("Value written in total before " + std::to_string(*total_offnode_neighbors));
+  CARTREORDER_INFO("Value written in max before " + std::to_string(*max_offnode_neighbors));
   *total_offnode_neighbors = 0;
   *max_offnode_neighbors = 0;
 
@@ -154,7 +154,7 @@ void mpireorderinglib::MPIX_Dist_graph_internode_cost(MPI_Comm dist_graph_comm,
 	}
   }
 
-  spdlog::info("Rank " + std::to_string(dist_graph_rank) + " has " + std::to_string(local_offnode_neighbors) + " off node neighbors");
+  CARTREORDER_INFO("Rank " + std::to_string(dist_graph_rank) + " has " + std::to_string(local_offnode_neighbors) + " off node neighbors");
 
   int node_offnode_comm_size;
   MPI_Allreduce(&local_offnode_neighbors,
@@ -249,9 +249,11 @@ void MPIX_Internode_cost(MPI_Comm cart_comm, int *total, int *max) {
   int n_neighbors{0};
   stencil_creater.create_stencil(ndims, stencil, &n_neighbors);
   MPI_Comm dist_graph;
+#ifdef LOGGING
   std::string s = "";
   for(int i : stencil) s += std::to_string(i) + " ";
-  spdlog::info("Stencil in Cost func is " + s);
+  CARTREORDER_INFO("Stencil in Cost func is " + s);
+#endif
   mpireorderinglib::MPIX_Dist_graph_create_from_cart_comm(cart_comm,
 														  ndims,
 														  stencil.data(),
