@@ -1,5 +1,5 @@
 # mpicartreorderlib - A Tool for Rank Reordering of Cartesian MPI Communicators
-Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag. A description of the algorithms can be found in the following technical report https://arxiv.org/abs/2005.09521.
+Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag. A description of the algorithms can be found in the following technical report https://arxiv.org/abs/2005.09521. If you make us of our library, please cite the technical report.
 
 ![alt text](https://github.com/konradvonkirchbach/mpicartreorderlib/blob/master/images/motivational_example-1.png "Motivational Example")
 
