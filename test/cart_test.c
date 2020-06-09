@@ -1,7 +1,7 @@
 #include <mpi.h>
 #include <stdio.h>
 
-#include "mpicartreorderlib/include/mpicartreorder.h"
+#include "../include/mpicartreorder.h"
 
 int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv);
