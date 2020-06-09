@@ -1,5 +1,5 @@
 # mpicartreorderlib - A Tool for Rank Reordering of Cartesian MPI Communicators
-Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag.
+Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag. A description of the algorithms can be found in the following technical report https://arxiv.org/abs/2005.09521.
 
 ![alt text](https://github.com/konradvonkirchbach/mpicartreorderlib/blob/master/images/motivational_example-1.png "Motivational Example")
 
@@ -7,7 +7,7 @@ Library with rank reordering algorithms for the **MPI_Cart_create** routine with
 This dynamic library aims at helping the user reduce the amount of communication between compute nodes (**inter-node communication**) in applications that make use of the **Cartesian communicator** in **MPI** with minimal changes of the codebase. Users can parse different parameters via environment variables, so that the input of the programm remains unchanged.
 
 ## Installation and Usage
-We use CMake for installation of the library. We recommend to make a built directory and call CMake from within. On UNIX systems just execute the following instructions.
+We use CMake for installation of the library. We recommend to make a build directory and call CMake from within. On UNIX systems just execute the following instructions.
 ```
 mkdir build
 cd build
@@ -89,3 +89,4 @@ gcc cart_test.c -I /path to library/mpicartreorderlib/include/. -lmpicartreorder
 
 env LD_LIBRARY_PATH=/path to library/lib/:$LD_LIBRARY_PATH <execution command>
 ```
+The test application can also be compiled using CMake.
