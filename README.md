@@ -1,5 +1,5 @@
 # mpicartreorderlib - A Tool for Rank Reordering of Cartesian MPI Communicators
-Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag. A description of the algorithms can be found in the following technical report https://arxiv.org/abs/2005.09521. If you make us of our library, please cite the technical report.
+Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag. A description of the algorithms can be found in the following technical report https://arxiv.org/abs/2005.09521. If you make use of our library, please cite the technical report.
 
 ![alt text](https://github.com/konradvonkirchbach/mpicartreorderlib/blob/master/images/motivational_example-1.png "Motivational Example")
 
@@ -90,3 +90,28 @@ gcc cart_test.c -I /path to library/mpicartreorderlib/include/. -lmpicartreorder
 env LD_LIBRARY_PATH=/path to library/lib/:$LD_LIBRARY_PATH <execution command>
 ```
 The test application can also be compiled using CMake.
+
+Licence
+=====
+The program is licenced under MIT licence.
+If you publish results using our algorithms, please acknowledge our work by quoting the following paper:
+
+```
+@article{DBLP:journals/corr/abs-2005-09521,
+  author    = {Sascha Hunold and
+               Konrad von Kirchbach and
+               Markus Lehr and
+               Christian Schulz and
+               Jesper Larsson Tr{\"{a}}ff},
+  title     = {Efficient Process-to-Node Mapping Algorithms for Stencil Computations},
+  journal   = {CoRR},
+  volume    = {abs/2005.09521},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/2005.09521},
+  archivePrefix = {arXiv},
+  eprint    = {2005.09521},
+  timestamp = {Fri, 22 May 2020 16:21:29 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-2005-09521.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+```
