@@ -89,3 +89,4 @@ gcc cart_test.c -I /path to library/mpicartreorderlib/include/. -lmpicartreorder
 
 env LD_LIBRARY_PATH=/path to library/lib/:$LD_LIBRARY_PATH <execution command>
 ```
+The test application can also be compiled using CMake.
