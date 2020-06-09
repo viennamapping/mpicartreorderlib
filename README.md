@@ -91,8 +91,8 @@ env LD_LIBRARY_PATH=/path to library/lib/:$LD_LIBRARY_PATH <execution command>
 ```
 The test application can also be compiled using CMake.
 
-Licence
-=====
+## Licence
+
 The program is licenced under MIT licence.
 If you publish results using our algorithms, please acknowledge our work by quoting the following paper:
 
