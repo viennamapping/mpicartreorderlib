@@ -6,21 +6,24 @@ find_package(MPI REQUIRED)
 
 SET(CMAKE_CXX_COMPILER mpicxx)
 
-SET(MY_COMPILE_FLAGS "")
+SET(MY_COMPILE_FLAGS "-O3")
 
-if(LOGGING)
+if (LOGGING)
     message("Setting LOGGING to true")
     SET(MY_COMPILE_FLAGS "${MY_COMPILE_FLAGS} -DLOGGING")
-endif()
+endif ()
+
+file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/include")
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_SOURCE_DIR}/include_")
+set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_SOURCE_DIR}/include")
 set(CMAKE_INSTALL_LIBDIR "${CMAKE_SOURCE_DIR}/lib")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}    "include")
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} "include")
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR} "src")
 
 set(REORDERING_ALGORITHMS
@@ -37,7 +40,23 @@ set(REORDERING_ALGORITHMS
         ${SRC_DIR}/Log/Logger.cpp)
 
 set(SETUP_CONFIGURATION
-        ${SRC_DIR}/configuration/configuration src/reordering_algorithms/utils/utils.h src/reordering_algorithms/utils/utils.cpp src/reordering_algorithms/abstract_reordering_scheme.h src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.cpp src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.h src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.cpp src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.h src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.cpp src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.h src/reordering_algorithms/include_reodering_schemes.h src/Log/Logger.cpp src/Log/Logger.h src/Stencils/Stencil_Creater.cpp src/Stencils/Stencil_Creater.h src/definitions.cpp src/Evaluation/evaluation_methods.h src/Evaluation/evaluation_method.cpp)
+        ${SRC_DIR}/configuration/configuration
+        src/reordering_algorithms/utils/utils.h
+        src/reordering_algorithms/utils/utils.cpp
+        src/reordering_algorithms/abstract_reordering_scheme.h
+        src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.cpp
+        src/reordering_algorithms/hyperplane/Hyperplane_Reorderer.h
+        src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.cpp
+        src/reordering_algorithms/kd_tree/kd_Tree_Reorderer.h
+        src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.cpp
+        src/reordering_algorithms/stencil_strips/Stencil_Strips_Reorderer.h
+        src/reordering_algorithms/include_reodering_schemes.h
+        src/Log/Logger.cpp src/Log/Logger.h
+        src/Stencils/Stencil_Creater.cpp
+        src/Stencils/Stencil_Creater.h
+        src/definitions.cpp
+        src/Evaluation/evaluation_methods.h
+        src/Evaluation/evaluation_method.cpp)
 
 add_library(mpicartreorderlib SHARED
         ${REORDERING_ALGORITHMS}
