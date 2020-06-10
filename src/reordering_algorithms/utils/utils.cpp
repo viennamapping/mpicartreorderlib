@@ -24,7 +24,7 @@ void mpireorderinglib::get_hypercube_distortion_factors(const int ndims,
   }
   //volumne of bounding box
   int stencil_volumne {1}, val, stencil_ndims{0};
-  for(size_t i {0}; i < bounding_rectangle.size(); i+=2) {
+  for(std::size_t i {0}; i < bounding_rectangle.size(); i+=2) {
 	val = std::abs(bounding_rectangle[i] - bounding_rectangle[i + 1]);
 	if (val == 0)
 	  continue;
