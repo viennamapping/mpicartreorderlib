@@ -1,4 +1,7 @@
 # mpicartreorderlib - A Tool for Rank Reordering of Cartesian MPI Communicators
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/eb87bc25602c49cc9708815cb436a6c0)](https://app.codacy.com/gh/viennamapping/mpicartreorderlib?utm_source=github.com&utm_medium=referral&utm_content=viennamapping/mpicartreorderlib&utm_campaign=Badge_Grade_Dashboard)
+
 Library with rank reordering algorithms for the **MPI_Cart_create** routine with set reordering flag. A description of the algorithms can be found in the following technical report https://arxiv.org/abs/2005.09521. If you make use of our library, please cite the technical report.
 
 ![alt text](https://github.com/konradvonkirchbach/mpicartreorderlib/blob/master/images/motivational_example-1.png "Motivational Example")
