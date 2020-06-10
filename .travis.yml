@@ -3,7 +3,6 @@ language: cpp
 compiler:
   - gcc
   - clang
-  - icc
 
 before_script:
   - sudo apt-get -qq update
