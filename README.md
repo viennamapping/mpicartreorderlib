@@ -95,7 +95,7 @@ gcc cart_test.c -I /path to library/mpicartreorderlib/include/. -lmpicartreorder
 
 env LD_LIBRARY_PATH=/path to library/lib/:$LD_LIBRARY_PATH <execution command>
 ```
-The test application can also be compiled using CMake.
+The test application can also be compiled using CMake. In the CMakeLists.txt file, provided in test directory, one can set the path to the header files of the library via `include_directories(<path to header directory>)`. The linker needs to know where the library is found, this is specified with `link_directories(<path to lib directory>)`. As demonstrated in the CMakeLists.txt of the test directory, both accept relative paths.
 
 ## Licence
 
