@@ -5,8 +5,10 @@ compiler:
   - clang
 
 before_script:
-  - sudo apt-get -qq update
+  - sudo apt-get update
   - sudo apt-get install libopenmpi-dev
+  - sudo apt-get -y install gcc
+  - sudo apt-get -y install clang
 
 script:
   - mkdir build
